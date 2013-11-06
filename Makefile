@@ -6,9 +6,9 @@ light_leds: light_leds.o
 	$(CC)ld -Ttext=0x80300000 -o $@ -e start $<
 
 clean:
-	rm *.o
-	rm asm_leds
-	rm *.srec
+	rm -f *.o
+	rm -f light_leds
+	rm -f *.srec
 
 .s.o:
 	$(CC)as -o $@ $<

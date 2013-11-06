@@ -1,8 +1,8 @@
 CC=arm-linux-gnueabi-
 
-asm_leds.srec: asm_leds
+light_leds.srec: light_leds
 	$(CC)objcopy -O srec $< $@
-asm_leds: asm_leds.o
+light_leds: light_leds.o
 	$(CC)ld -Ttext=0x80300000 -o $@ -e start $<
 
 clean:

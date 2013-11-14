@@ -1,8 +1,8 @@
 CC=arm-linux-gnueabi-
 
-all: $(patsubst %.s,%.srec,$(wildcard *.s))
+all: $(patsubst %.S,%.srec,$(wildcard *.S))
 
-%.o: %.s
+%.o: %.S
 	$(CC)as -o $@ $<
 
 %.elf: %.o

@@ -1,37 +1,17 @@
 CC=arm-linux-gnueabi-
 
-all: light_leds.srec \
-     light_leds_svc.srec \
-     light_leds_softirq.srec \
-     light_leds_hardirq.srec
+all: $(patsubst %.s,%.srec,$(wildcard *.s))
 
-light_leds.srec: light_leds
-	$(CC)objcopy -O srec $< $@
-light_leds: light_leds.o
+%.o: %.s
+	$(CC)as -o $@ $<
+
+%.elf: %.o
 	$(CC)ld -Ttext=0x80300000 -e start -o $@ $<
 
-light_leds_svc.srec: light_leds_svc
+%.srec: %.elf
 	$(CC)objcopy -O srec $< $@
-light_leds_svc: light_leds_svc.o
-	$(CC)ld -Ttext=0x80300000 -e start -o $@ $<
-
-light_leds_softirq.srec: light_leds_softirq
-	$(CC)objcopy -O srec $< $@
-light_leds_softirq: light_leds_softirq.o
-	$(CC)ld -Ttext=0x80300000 -e start -o $@ $<
-
-light_leds_hardirq.srec: light_leds_hardirq
-	$(CC)objcopy -O srec $< $@
-light_leds_hardirq: light_leds_hardirq.o
-	$(CC)ld -Ttext=0x80300000 -e start -o $@ $<
 
 clean:
 	rm -f *.o
-	rm -f light_leds
-	rm -f light_leds_svc
-	rm -f light_leds_softirq
-	rm -f light_leds_hardirq
+	rm -f *.elf
 	rm -f *.srec
-
-.s.o:
-	$(CC)as -o $@ $<

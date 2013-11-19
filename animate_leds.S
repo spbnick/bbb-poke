@@ -44,9 +44,15 @@ timer_tcrr              = 0x3c
 timer_tldr              = 0x40
 
 counter_tick            = 32000/8192     /* In 1/32000 of second */
-step_lsb                = 10
-step_width              = 5
-br_max                  = 8
+step_lsb                = 9
+step_br_lsb             = 0
+step_br_width           = 4
+step_br_num             = 1 << step_br_width
+step_on_lsb             = step_br_lsb + step_br_width
+step_on_width           = 2
+step_width              = step_br_width + step_on_width
+br_width                = 3
+br_num                  = 1 << br_width
 
 .text
 .global start
@@ -163,31 +169,36 @@ isr:
     ubfx r_step, r_counter, step_lsb, step_width
 
     r_pulse_mask    .req r3
-    mov r_pulse_mask, (1 << br_max) - 1
+    mov r_pulse_mask, (1 << br_num) - 1
     r_led_mask      .req r4
     mov r_led_mask, 0
     r_led_num       .req r5
     mov r_led_num, gpio_leds_num
 
-    r_led_sh        .req r6
-    r_led_br        .req r7
-    r_led_bit       .req r8
+    r_led_br        .req r6
+    r_led_bit       .req r7
     /* For each LED and step */
 isr_led_loop:
+    /* Check that it is the "on" phase */
+    tst r_step, ((1 << step_on_width) - 1) << step_on_lsb
+    movne r_led_bit, 0
+    bne isr_led_loop_append
     /* Calculate LED brightness */
-    ubfx r_led_sh, r_step, 0, step_width - 1
-    subs r_led_sh, r_led_sh, 1 << (step_width - 2)
-    rsbmi r_led_sh, r_led_sh, 0
-    mov r_led_br, br_max
-    lsr r_led_br, r_led_br, r_led_sh
+    ubfx r_led_br, r_step, 0, step_br_width
+    subs r_led_br, r_led_br, step_br_num / 2
+    rsbmi r_led_br, r_led_br, 0
+    rsb r_led_br, r_led_br, step_br_num / 2
+    /* Scale down to brightness range */
+    lsr r_led_br, r_led_br, (step_br_width - 1) - br_width
     /* Apply pulse mask */
     tst r_counter, r_pulse_mask, lsr r_led_br
-    moveq r_led_bit, 1
     movne r_led_bit, 0
+    moveq r_led_bit, 1
+isr_led_loop_append:
     /* Append LED bit to the LED mask */
     orr r_led_mask, r_led_bit, r_led_mask, lsl 1
-    /* Move next step */
-    add r_step, r_step, 1
+    /* Move three steps */
+    add r_step, r_step, 3
     /* Move next LED */
     subs r_led_num, r_led_num, 1
     bne isr_led_loop
@@ -203,7 +214,6 @@ isr_led_loop:
 
     .unreq r_led_bit
     .unreq r_led_br
-    .unreq r_led_sh
     .unreq r_led_num
     .unreq r_led_mask
     .unreq r_pulse_mask

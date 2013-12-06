@@ -141,7 +141,7 @@ loop:
      */
 isr:
     /* Save registers */
-    push {r0, r1, r2, r3, r4, r5, r6, r7, r8}
+    push {r0-r8}
 
     /* Check that this is the timer interrupt */
     ldr r0, =intc_base
@@ -237,7 +237,7 @@ isr_exit:
     mcr p15, 0, r0, c7, c10, 4
 
     /* Restore registers */
-    pop {r0, r1, r2, r3, r4, r5, r6, r7, r8}
+    pop {r0-r8}
 
     /* Return from IRQ exception */
     subs pc, lr, 4

@@ -1,4 +1,4 @@
-CC=arm-linux-gnueabi-
+CC=arm-linux-gnueabihf-
 
 PROGRAMS = \
     animate_leds        \

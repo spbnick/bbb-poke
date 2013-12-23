@@ -9,7 +9,7 @@ same.
 Building
 --------
 
-Run `CC=<compiler-linker-prefix> make`, where `<compiler-linker-prefix>` is a
+Run `make CC=<compiler-linker-prefix>`, where `<compiler-linker-prefix>` is a
 compiler/linker prefix, e.g. `arm-linux-gnueabi-`, or just run `make` if you
 have compiler/linker with this prefix installed as it is the Makefile's
 default.

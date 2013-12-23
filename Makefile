@@ -12,7 +12,7 @@ PROGRAMS = \
 all: $(addsuffix .srec, $(PROGRAMS))
 
 %.o: %.S
-	$(CC)as -o $@ $<
+	$(CC)gcc -c -o $@ $<
 
 define ELF_RULE
 $(strip $(1))_OBJS = $$(addsuffix .o, $(1) $$($(strip $(1))_MODULES))

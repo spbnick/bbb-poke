@@ -12,7 +12,7 @@ PROGRAMS = \
 
 uart_test_MODULES = uart
 
-all: $(addsuffix .srec, $(PROGRAMS))
+all: $(PROGRAMS:=.srec)
 
 %.o: %.S
 	$(CC)gcc -c -o $@ $<
@@ -30,5 +30,5 @@ $(foreach p, $(PROGRAMS), $(eval $(call ELF_RULE, $(p))))
 
 clean:
 	rm -f $(OBJS)
-	rm -f $(addsuffix .elf, $(PROGRAMS))
-	rm -f $(addsuffix .srec, $(PROGRAMS))
+	rm -f $(PROGRAMS:=.elf)
+	rm -f $(PROGRAMS:=.srec)

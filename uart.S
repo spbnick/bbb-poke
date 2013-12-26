@@ -97,9 +97,12 @@ r_arg_base  .req r8
 r_arg_off   .req r4
 /* Character being processed/printed */
 r_c         .req r5
+/* Multi-purpose temporary register */
 r_tmp       .req r6
 /* Argument value */
 r_arg       .req r7
+/* Transmit polling register */
+r_poll      .req r10
 /* UART0 base address */
 r_uart_base .req r11
 
@@ -122,8 +125,8 @@ uart_printf_loop:
 uart_printf_putc:
     /* Wait for transmit hold register to clear (TXFIFOE == 1) */
 1:
-    ldr r_tmp, [r_uart_base, uart_lsr]
-    tst r_tmp, 1 << 5                   /* TXFIFOE */
+    ldr r_poll, [r_uart_base, uart_lsr]
+    tst r_poll, 1 << 5                  /* TXFIFOE */
     beq 1b
     /* Output character */
     str r_c, [r_uart_base, uart_thr]
@@ -139,10 +142,10 @@ uart_printf_spec:
     cmp r_c, 's
     beq uart_printf_spec_string
     /* Output unknown conversion specification */
-    mov r_arg, r_c
+    mov r_tmp, r_c
     mov r_c, '%
     bl uart_printf_putc
-    mov r_c, r_arg
+    mov r_c, r_tmp
     bl uart_printf_putc
     b uart_printf_loop
 

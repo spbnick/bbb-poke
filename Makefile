@@ -7,7 +7,10 @@ PROGRAMS = \
     light_leds_hardirq  \
     light_leds_softirq  \
     light_leds_svc      \
+    uart_test           \
     serial_hello
+
+uart_test_MODULES = uart
 
 all: $(addsuffix .srec, $(PROGRAMS))
 

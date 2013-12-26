@@ -84,6 +84,8 @@ r_tmp       .req r1
  *
  * Only conversion specifiers are supported:
  *  s   - string.
+ *  x   - lowercase unsigned hex integer
+ *  X   - uppercase unsigned hex integer
  *  %   - '%' character.
  */
 .global uart_printf
@@ -101,6 +103,8 @@ r_c         .req r5
 r_tmp       .req r6
 /* Argument value */
 r_arg       .req r7
+/* Counter register */
+r_i         .req r9
 /* Transmit polling register */
 r_poll      .req r10
 /* UART0 base address */
@@ -141,6 +145,10 @@ uart_printf_spec:
     beq uart_printf_spec_percent
     cmp r_c, 's
     beq uart_printf_spec_string
+    cmp r_c, 'x
+    beq uart_printf_spec_hex_lower
+    cmp r_c, 'X
+    beq uart_printf_spec_hex_upper
     /* Output unknown conversion specification */
     mov r_tmp, r_c
     mov r_c, '%
@@ -167,6 +175,31 @@ uart_printf_spec_string:
     ldrb r_c, [r_arg], 1
     cmp r_c, 0
     beq uart_printf_loop
+    bl uart_printf_putc
+    b 1b
+
+/* Process '%X' conversion specification */
+uart_printf_spec_hex_upper:
+    mov r_tmp, 'A - 10
+    b uart_printf_spec_hex
+
+/* Process '%x' conversion specification */
+uart_printf_spec_hex_lower:
+    mov r_tmp, 'a - 10
+    /* FALL-THROUGH */
+
+/* Process '%x' or '%X' conversion specification */
+uart_printf_spec_hex:
+    bl uart_printf_get_arg
+    mov r_i, 32
+1:
+    subs r_i, r_i, 4
+    bcc uart_printf_loop
+    mov r_c, 0xF
+    and r_c, r_c, r_arg, LSR r_i
+    cmp r_c, 9
+    addls r_c, r_c, '0
+    addhi r_c, r_c, r_tmp
     bl uart_printf_putc
     b 1b
 

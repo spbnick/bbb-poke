@@ -3,6 +3,7 @@ CC=arm-linux-gnueabihf-
 PROGRAMS = \
     animate_leds        \
     blink_leds          \
+    debug_test          \
     light_leds          \
     light_leds_hardirq  \
     light_leds_softirq  \
@@ -11,6 +12,7 @@ PROGRAMS = \
     serial_hello
 
 uart_test_MODULES = uart
+debug_test_MODULES = uart debug
 
 all: $(PROGRAMS:=.srec)
 

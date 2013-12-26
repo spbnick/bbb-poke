@@ -17,7 +17,7 @@ all: $(addsuffix .srec, $(PROGRAMS))
 define ELF_RULE
 $(strip $(1))_OBJS = $$(addsuffix .o, $(1) $$($(strip $(1))_MODULES))
 $(1).elf: $$($(strip $(1))_OBJS)
-	$(CC)ld -Ttext=0x80300000 -e start -o $$@ $$^
+	$(CC)ld -T packed.ld -o $$@ $$^
 OBJS += $$($(strip $(1))_OBJS)
 endef
 $(foreach p, $(PROGRAMS), $(eval $(call ELF_RULE, $(p))))

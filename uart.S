@@ -191,16 +191,16 @@ uart_printf_spec_hex_lower:
 /* Process '%x' or '%X' conversion specification */
 uart_printf_spec_hex:
     bl uart_printf_get_arg
-    mov r_i, 32
+    mov r_i, 28
 1:
-    subs r_i, r_i, 4
-    bcc uart_printf_loop
     mov r_c, 0xF
     and r_c, r_c, r_arg, LSR r_i
     cmp r_c, 9
     addls r_c, r_c, '0
     addhi r_c, r_c, r_tmp
     bl uart_printf_putc
+    subs r_i, r_i, 4
+    bcc uart_printf_loop
     b 1b
 
 /* Sub: retrieve next argument to r_arg */

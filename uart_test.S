@@ -44,6 +44,8 @@ fmt_five_str:
     .asciz "|%s|%s|%s|%s|%s|\r\n"
 fmt_xxXX:
     .asciz "%x%x %X%X\r\n"
+fmt_c:
+    .asciz "%c\r\n"
 
 .macro test1 fmt
     ldr r0, =\fmt
@@ -99,6 +101,8 @@ start:
     test5 fmt_four_str, str_0, str_1, str_2, str_3
     test6 fmt_five_str, str_0, str_1, str_2, str_3, str_4
     test5 fmt_xxXX, 0x01234567, 0x89abcdef, 0x01234567, 0x89abcdef
+    test2 fmt_c, 'A
+    test2 fmt_c, 0x100 + 'A
 
     mov r0, 0
     pop {pc}

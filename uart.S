@@ -149,6 +149,8 @@ uart_printf_spec:
     beq uart_printf_spec_hex_lower
     cmp r_c, 'X
     beq uart_printf_spec_hex_upper
+    cmp r_c, 'c
+    beq uart_printf_spec_char
     /* Output unknown conversion specification */
     mov r_tmp, r_c
     mov r_c, '%
@@ -202,6 +204,13 @@ uart_printf_spec_hex:
     subs r_i, r_i, 4
     bcc uart_printf_loop
     b 1b
+
+/* Process '%c' conversion specification */
+uart_printf_spec_char:
+    bl uart_printf_get_arg
+    and r_c, r_arg, 0xFF
+    bl uart_printf_putc
+    b uart_printf_loop
 
 /* Sub: retrieve next argument to r_arg */
 uart_printf_get_arg:

@@ -47,18 +47,18 @@ fmt_xxXX:
 fmt_c:
     .asciz "%c\r\n"
 
-.macro test1 fmt
+.macro printf_test1 fmt
     ldr r0, =\fmt
     bl uart_printf
 .endm
 
-.macro test2 fmt, arg1
+.macro printf_test2 fmt, arg1
     ldr r0, =\fmt
     ldr r1, =\arg1
     bl uart_printf
 .endm
 
-.macro test5 fmt, arg1, arg2, arg3, arg4
+.macro printf_test5 fmt, arg1, arg2, arg3, arg4
     ldr r0, =\arg4
     push {r0}
     ldr r0, =\fmt
@@ -69,7 +69,7 @@ fmt_c:
     pop {r0}
 .endm
 
-.macro test6 fmt, arg1, arg2, arg3, arg4, arg5
+.macro printf_test6 fmt, arg1, arg2, arg3, arg4, arg5
     ldr r0, =\arg4
     ldr r1, =\arg5
     push {r0,r1}
@@ -86,23 +86,26 @@ fmt_c:
 start:
     push {lr}
 
-    test1 str_empty
-    test1 str_one_char
-    test1 str_two_chars
-    test1 str_many_chars
-    test1 fmt_incomplete_spec
-    test1 fmt_unknown_spec
-    test1 fmt_percent_spec
-    test1 fmt_mixed
-    test2 fmt_str, str_empty
-    test2 fmt_str, str_one_char
-    test2 fmt_str, str_two_chars
-    test2 fmt_str, str_many_chars
-    test5 fmt_four_str, str_0, str_1, str_2, str_3
-    test6 fmt_five_str, str_0, str_1, str_2, str_3, str_4
-    test5 fmt_xxXX, 0x01234567, 0x89abcdef, 0x01234567, 0x89abcdef
-    test2 fmt_c, 'A
-    test2 fmt_c, 0x100 + 'A
+    /*
+     * Test uart_printf
+     */
+    printf_test1 str_empty
+    printf_test1 str_one_char
+    printf_test1 str_two_chars
+    printf_test1 str_many_chars
+    printf_test1 fmt_incomplete_spec
+    printf_test1 fmt_unknown_spec
+    printf_test1 fmt_percent_spec
+    printf_test1 fmt_mixed
+    printf_test2 fmt_str, str_empty
+    printf_test2 fmt_str, str_one_char
+    printf_test2 fmt_str, str_two_chars
+    printf_test2 fmt_str, str_many_chars
+    printf_test5 fmt_four_str, str_0, str_1, str_2, str_3
+    printf_test6 fmt_five_str, str_0, str_1, str_2, str_3, str_4
+    printf_test5 fmt_xxXX, 0x01234567, 0x89abcdef, 0x01234567, 0x89abcdef
+    printf_test2 fmt_c, 'A
+    printf_test2 fmt_c, 0x100 + 'A
 
     mov r0, 0
     pop {pc}

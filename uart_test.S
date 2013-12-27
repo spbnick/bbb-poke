@@ -110,6 +110,20 @@ start:
     /*
      * Test uart_hexdump
      */
+    /* Output 0 bytes */
+    mov r0, 0
+    mov r1, 0
+    bl uart_hexdump
+
+    /* Output 1 byte */
+    mov r0, 0
+    push {r0}
+    mov r0, sp
+    mov r1, 1
+    bl uart_hexdump
+    add sp, sp, 4
+
+    /* Output 256 bytes */
     mov r2, 0x100 / 4
     mrs r0, apsr
     tst r0, 1 << 9

@@ -244,3 +244,82 @@ uart_printf_exit:
 .unreq r_i
 .unreq r_poll
 .unreq r_uart_base
+
+/*
+ * Hexdump memory to UART0.
+ * @param ptr   Memory location to dump.
+ * @param len   Memory size to dump.
+ */
+.global uart_hexdump
+uart_hexdump:
+
+r_ptr       .req r0
+r_len       .req r1
+r_b         .req r2
+r_c         .req r3
+r_uart_base .req r4
+r_poll      .req r5
+r_i         .req r6
+
+    push {r4-r6, lr}
+    ldr r_uart_base, =uart_base0
+    mov r_i, 0
+
+uart_hexdump_loop:
+    subs r_len, r_len, 1
+    bcc uart_hexdump_terminate
+
+    mov r_c, 0x20
+    bl uart_hexdump_putc
+
+    ldrb r_b, [r_ptr], 1
+
+    lsr r_c, r_b, 4
+    cmp r_c, 9
+    addls r_c, r_c, '0
+    addhi r_c, r_c, 'a - 10
+    bl uart_hexdump_putc
+
+    and r_c, r_b, 0xF
+    cmp r_c, 9
+    addls r_c, r_c, '0
+    addhi r_c, r_c, 'a - 10
+    bl uart_hexdump_putc
+
+    add r_i, r_i, 1
+    tst r_i, 0xF
+    bne uart_hexdump_loop
+    mov r_c, '\r
+    bl uart_hexdump_putc
+    mov r_c, '\n
+    bl uart_hexdump_putc
+    b uart_hexdump_loop
+
+/* Sub: print character in r_c */
+uart_hexdump_putc:
+    /* Wait for transmit hold register to clear (TXFIFOE == 1) */
+1:
+    ldr r_poll, [r_uart_base, uart_lsr]
+    tst r_poll, 1 << 5                  /* TXFIFOE */
+    beq 1b
+    /* Output character */
+    str r_c, [r_uart_base, uart_thr]
+    bx lr
+
+uart_hexdump_terminate:
+    tst r_i, 0xF
+    beq uart_hexdump_exit
+    mov r_c, '\r
+    bl uart_hexdump_putc
+    mov r_c, '\n
+    bl uart_hexdump_putc
+uart_hexdump_exit:
+    pop {r4-r6, pc}
+
+.unreq r_ptr
+.unreq r_len
+.unreq r_b
+.unreq r_c
+.unreq r_uart_base
+.unreq r_poll
+.unreq r_i

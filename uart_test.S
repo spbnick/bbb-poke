@@ -107,5 +107,25 @@ start:
     printf_test2 fmt_c, 'A
     printf_test2 fmt_c, 0x100 + 'A
 
+    /*
+     * Test uart_hexdump
+     */
+    mov r2, 0x100 / 4
+    mrs r0, apsr
+    tst r0, 1 << 9
+    ldrne r0, =0xfcfdfeff
+    ldreq r0, =0xfffefdfc
+    ldr r1, =0x04040404
+1:
+    push {r0}
+    usub8 r0, r0, r1
+    subs r2, r2, 1
+    bne 1b
+
+    mov r0, sp
+    mov r1, 0x100
+    bl uart_hexdump
+    add sp, sp, 0x100
+
     mov r0, 0
     pop {pc}

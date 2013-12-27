@@ -234,3 +234,13 @@ uart_printf_get_arg:
 /* Exit routine */
 uart_printf_exit:
     pop {r4-r11, pc}
+
+.unreq r_fmt
+.unreq r_arg_base
+.unreq r_arg_off
+.unreq r_c
+.unreq r_tmp
+.unreq r_arg
+.unreq r_i
+.unreq r_poll
+.unreq r_uart_base

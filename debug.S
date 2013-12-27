@@ -45,8 +45,8 @@ _debug_dump_core_regs:
     /* Push flag characters */
 .macro push_bit lsb, off, on
     tst r0, 1 << \lsb
-    moveq r1, \on
-    movne r1, \off
+    moveq r1, \off
+    movne r1, \on
     push {r1}
 .endm
     push_bit 6, 'f, 'F

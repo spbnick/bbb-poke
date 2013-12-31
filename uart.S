@@ -84,8 +84,9 @@ r_tmp       .req r1
  *
  * Only conversion specifiers are supported:
  *  s   - string.
- *  x   - lowercase unsigned hex integer
- *  X   - uppercase unsigned hex integer
+ *  x   - lowercase unsigned hex integer.
+ *  X   - uppercase unsigned hex integer.
+ *  c   - single character.
  *  %   - '%' character.
  */
 .global uart_printf

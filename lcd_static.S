@@ -323,12 +323,8 @@ start:
      * 70 CLKC_RESET            00000000
      */
 
-    .if 0
     /* Enable DMA and core submodule clocks, leave LIDD submodule disabled */
     mov r1, 0x5
-    .endif
-    /* Enable clocks */
-    mov r1, 0x7
     str r1, [r_lcdc_base, lcdc_clkc_enable]
 
     /*

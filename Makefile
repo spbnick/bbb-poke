@@ -4,6 +4,7 @@ PROGRAMS = \
     animate_leds        \
     blink_leds          \
     debug_test          \
+    lcd_pattern         \
     lcd_static          \
     light_leds          \
     light_leds_hardirq  \

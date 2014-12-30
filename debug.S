@@ -16,7 +16,9 @@ _debug_dump_core_regs:
 
     mrs r0, cpsr
 
-    /* Push mode string */
+    /*
+     * Push mode string
+     */
     and r1, r0, 0x1F
 .macro match_mode mode, c1, c2, c3
     cmp r1, \mode
@@ -38,11 +40,15 @@ _debug_dump_core_regs:
 1:
     tst r0, 1 << 9          /* E (endiannes) flag */
     reveq r2, r2
+    /* Push the mode string */
     push {r2}
+    /* Push the pointer to the mode string */
     mov r2, sp
     push {r2}
 
-    /* Push flag characters */
+    /*
+     * Push flag characters
+     */
 .macro push_bit lsb, off, on
     tst r0, 1 << \lsb
     moveq r1, \off
@@ -59,10 +65,14 @@ _debug_dump_core_regs:
     push_bit 30, 'z, 'Z
     push_bit 31, 'n, 'N
 
-    /* Push raw cpsr */
+    /*
+     * Push raw cpsr
+     */
     push {r0}
 
-    /* Transfer other captured registers */
+    /*
+     * Transfer other captured registers
+     */
     ldmfa r9!, {r1-r8}      /* Load captured r8-r15 */
     push {r1-r8}            /* Push captured r8-r15 */
     ldmfa r9!, {r1-r8}      /* Load captured r0-r7 */

@@ -22,6 +22,15 @@
     add sp, sp, 4   /* Skip PC */
 .endm
 
+/* Print PC register value */
+.macro debug_print_pc
+    push {r0-r3}
+    ldr r0, =pc_fmt
+    mov r1, pc
+    bl uart_printf
+    pop {r0-r3}
+.endm
+
 #endif
 
 #endif

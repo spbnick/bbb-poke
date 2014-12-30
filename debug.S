@@ -90,3 +90,6 @@ core_regs_fmt:
     .ascii "  ip  %x    sp  %x    lr  %x    pc  %x\r\n"
     .ascii "  cpsr %x "
     .asciz "%c%c%c%c%c %c %c%c%c %s\r\n" /* NZCVQ E AIF mode */
+.global debug_pc_fmt
+debug_pc_fmt:
+    .asciz "PC: %x\r\n"

@@ -208,7 +208,3 @@ i2c_write_exit:
 .unreq  r_ptr
 .unreq  r_len
 .unreq  r_tmp
-
-.data
-pc_fmt:
-    .asciz "PC: %x\r\n"

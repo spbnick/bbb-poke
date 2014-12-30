@@ -40,7 +40,7 @@ start:
     ldr r2, =buf
     /* Output buffer length */
     mov r3, 32
-    bl i2c_write
+    bl i2c_read
 
     /* Dump the buffer */
     ldr r0, =buf

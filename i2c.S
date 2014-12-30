@@ -95,8 +95,8 @@ r_tmp       .req r1
  *
  * @return Number of unwritten bytes.
  */
-.global i2c_write
-i2c_write:
+.global i2c_read
+i2c_read:
 
 r_base          .req r0
 r_slave_addr    .req r1
@@ -178,7 +178,7 @@ r_tmp           .req r4
     /* Wait for receive-ready or transfer-done */
     ldr r_tmp, [r_base, i2c_irqstatus_raw]
     tst r_tmp, i2c_irqstatus_ardy
-    bne i2c_write_exit
+    bne i2c_read_exit
     tst r_tmp, i2c_irqstatus_rrdy
     beq 1b
 
@@ -194,7 +194,7 @@ r_tmp           .req r4
     /* Repeat */
     b 1b
 
-i2c_write_exit:
+i2c_read_exit:
     /* Clear all interrupt status bits */
     ldr r_tmp, =0xffff
     str r_tmp, [r_base, i2c_irqstatus]

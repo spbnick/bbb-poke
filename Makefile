@@ -11,10 +11,12 @@ PROGRAMS = \
     light_leds_softirq  \
     light_leds_svc      \
     uart_test           \
-    serial_hello
+    serial_hello        \
+    eeprom_dump
 
 uart_test_MODULES = uart
 debug_test_MODULES = uart debug
+eeprom_dump_MODULES = uart i2c
 
 all: $(PROGRAMS:=.srec)
 

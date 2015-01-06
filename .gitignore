@@ -2,3 +2,5 @@
 *.d
 *.elf
 *.srec
+*.spl
+*.bin

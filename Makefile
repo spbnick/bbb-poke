@@ -1,4 +1,6 @@
-CC=arm-linux-gnueabihf-
+CC=arm-none-eabi-
+
+TARGET_CFLAGS=-mcpu=cortex-a8 -mfloat-abi=hard -mfpu=vfpv3 -marm
 
 PROGRAMS = \
     animate_leds        \
@@ -21,8 +23,8 @@ eeprom_dump_MODULES = uart i2c
 all: $(PROGRAMS:=.srec)
 
 %.o: %.S
-	$(CC)gcc -D__ASSEMBLY__ -c -o $@ $<
-	$(CC)gcc -D__ASSEMBLY__ -MM $< > $*.d
+	$(CC)gcc $(TARGET_CFLAGS) -g3 -D__ASSEMBLY__ -c -o $@ $<
+	$(CC)gcc $(TARGET_CFLAGS) -D__ASSEMBLY__ -MM $< > $*.d
 
 define ELF_RULE
 $(strip $(1))_OBJS = $$(addsuffix .o, $(1) $$($(strip $(1))_MODULES))

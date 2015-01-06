@@ -329,7 +329,7 @@ pattern_loop:
     ble pattern_break
 
     /* Calculate next x = y - sign(x) * sqrt(abs(bx - c)) */
-    vcmp.f32 s_x, 0
+    vcmp.f32 s_x, #0
     vmrs apsr_nzcv, fpscr
     vmulne.f32 s_tmp, s_b, s_x
     vsubne.f32 s_tmp, s_tmp, s_c

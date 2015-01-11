@@ -3,15 +3,18 @@
  */
 .syntax unified
 
-uart_base0  = 0x44e09000
-uart_dll    = 0x00
-uart_dlh    = 0x04
-uart_lcr    = 0x0c
-uart_lsr    = 0x14
-uart_sysc   = 0x54
-uart_syss   = 0x58
-uart_mdr1   = 0x20
-uart_thr    = 0x00
+uart_base0              = 0x44e09000
+uart_dll                = 0x00
+uart_dlh                = 0x04
+uart_lcr                = 0x0c
+uart_lsr                = 0x14
+uart_lsr_txfifoe        = 1 << 5
+uart_sysc               = 0x54
+uart_sysc_softreset     = 1 << 1
+uart_syss               = 0x58
+uart_syss_resetdone     = 1 << 0
+uart_mdr1               = 0x20
+uart_thr                = 0x00
 
 .text
 
@@ -27,13 +30,13 @@ r_tmp       .req r1
     ldr r_uart_base, =uart_base0
 
     /* Reset: set UARTi.UART_SYSC[1] SOFTRESET to 1 */
-    mov r_tmp, 2
+    mov r_tmp, uart_sysc_softreset
     str r_tmp, [r_uart_base, uart_sysc]
     
     /* Wait for reset: poll for UARTi.UART_SYSS[0] RESETDONE == 1 */
 1:
     ldr r_tmp, [r_uart_base, uart_syss]
-    cmp r_tmp, 1
+    cmp r_tmp, uart_syss_resetdone
     bne 1b
 
     /*
@@ -93,7 +96,7 @@ r_poll      .req r2
     /* Wait for transmit hold register to clear (TXFIFOE == 1) */
 1:
     ldr r_poll, [r_uart_base, uart_lsr]
-    tst r_poll, 1 << 5                  /* TXFIFOE */
+    tst r_poll, uart_lsr_txfifoe
     beq 1b
 
     /* Output character */
@@ -160,7 +163,7 @@ uart_printf_putc:
     /* Wait for transmit hold register to clear (TXFIFOE == 1) */
 1:
     ldr r_poll, [r_uart_base, uart_lsr]
-    tst r_poll, 1 << 5                  /* TXFIFOE */
+    tst r_poll, uart_lsr_txfifoe
     beq 1b
     /* Output character */
     str r_c, [r_uart_base, uart_thr]
@@ -330,7 +333,7 @@ uart_hexdump_putc:
     /* Wait for transmit hold register to clear (TXFIFOE == 1) */
 1:
     ldr r_poll, [r_uart_base, uart_lsr]
-    tst r_poll, 1 << 5                  /* TXFIFOE */
+    tst r_poll, uart_lsr_txfifoe
     beq 1b
     /* Output character */
     str r_c, [r_uart_base, uart_thr]

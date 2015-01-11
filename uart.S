@@ -27,7 +27,7 @@ r_tmp       .req r1
     ldr r_uart_base, =uart_base0
 
     /* Reset: set UARTi.UART_SYSC[1] SOFTRESET to 1 */
-    mov r_tmp, 1
+    mov r_tmp, 2
     str r_tmp, [r_uart_base, uart_sysc]
     
     /* Wait for reset: poll for UARTi.UART_SYSS[0] RESETDONE == 1 */

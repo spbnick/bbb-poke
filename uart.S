@@ -9,12 +9,14 @@ uart_dlh                = 0x04
 uart_lcr                = 0x0c
 uart_lsr                = 0x14
 uart_lsr_txfifoe        = 1 << 5
+uart_lsr_rxfifoe        = 1 << 0
 uart_sysc               = 0x54
 uart_sysc_softreset     = 1 << 1
 uart_syss               = 0x58
 uart_syss_resetdone     = 1 << 0
 uart_mdr1               = 0x20
 uart_thr                = 0x00
+uart_rhr                = 0x00
 
 .text
 
@@ -101,6 +103,35 @@ r_poll      .req r2
 
     /* Output character */
     str r_c, [r_uart_base, uart_thr]
+
+    bx lr
+
+.unreq r_c
+.unreq r_uart_base
+.unreq r_poll
+
+/*
+ * Input a character from UART0.
+ *
+ * @return Character read.
+ */
+.global uart_getc
+uart_getc:
+
+r_c         .req r0
+r_uart_base .req r1
+r_poll      .req r2
+
+    ldr r_uart_base, =uart_base0
+
+    /* Wait for transmit hold register to fill (RXFIFOE == 1) */
+1:
+    ldr r_poll, [r_uart_base, uart_lsr]
+    tst r_poll, uart_lsr_rxfifoe
+    beq 1b
+
+    /* Input character */
+    ldr r_c, [r_uart_base, uart_rhr]
 
     bx lr
 

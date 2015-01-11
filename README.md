@@ -21,3 +21,8 @@ All the programs expect to be run on bare hardware, from U-boot. In U-boot,
 execute `loads` and paste the contents of the .srec file you wish to run. This
 will load the program to RAM. Execute `go 80300000` to run it. Reset the board
 to stop.
+
+Some of the programs (not all have been verified yet) also work as SPL
+(Secondary Boot Loader). You can load them by powering-up your BBB with boot
+switch (S2) held down, and transferring the .bin files to the board using
+Xmodem on serial line.

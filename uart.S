@@ -77,6 +77,35 @@ r_tmp       .req r1
 
 
 /*
+ * Output a single character to UART0.
+ *
+ * @param c Character to output.
+ */
+.global uart_putc
+uart_putc:
+
+r_c         .req r0
+r_uart_base .req r1
+r_poll      .req r2
+
+    ldr r_uart_base, =uart_base0
+
+    /* Wait for transmit hold register to clear (TXFIFOE == 1) */
+1:
+    ldr r_poll, [r_uart_base, uart_lsr]
+    tst r_poll, 1 << 5                  /* TXFIFOE */
+    beq 1b
+
+    /* Output character */
+    str r_c, [r_uart_base, uart_thr]
+
+    bx lr
+
+.unreq r_c
+.unreq r_uart_base
+.unreq r_poll
+
+/*
  * Output a printf-formatted string to UART0.
  *
  * @param fmt   Format string.

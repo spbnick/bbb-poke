@@ -6,7 +6,11 @@
 .syntax unified
 
 i2c0_base                   = 0x44e0b000
-
+cm_wkup_base                = 0x44e00400
+cm_wkup_i2c0_clkctrl        = 0xb8
+ctrl_base                   = 0x44e10000
+ctrl_conf_i2c0_sda          = 0x988
+ctrl_conf_i2c0_scl          = 0x98c
 
 .text
 .global start
@@ -15,6 +19,30 @@ start:
 
     /* Initialize UART0 */
     bl uart_init
+
+    /* Wait for Enter to be pressed */
+1:
+    bl uart_getc
+    cmp r0, 0xd
+    bne 1b
+
+    /* Start with new line */
+    mov r0, 0xd
+    bl uart_putc
+    mov r0, 0xa
+    bl uart_putc
+
+    /* Turn on I2C0 module */
+    ldr r0, =cm_wkup_base
+    mov r1, 0x2 /* ENABLE */
+    str r1, [r0, cm_wkup_i2c0_clkctrl]
+
+    /* Route I2C0 pins */
+    mov r1, 0x60    /* Slow slew rate, receiver enabled, mode 0 */
+    ldr r0, =(ctrl_base + ctrl_conf_i2c0_sda)
+    str r1, [r0]
+    ldr r0, =(ctrl_base + ctrl_conf_i2c0_scl)
+    str r1, [r0]
 
     /* Initialize I2C0 */
     ldr r0, =i2c0_base
@@ -46,6 +74,12 @@ start:
     ldr r0, =buf
     mov r1, 32
     bl uart_hexdump
+
+    /* Wait for Enter to be pressed */
+1:
+    bl uart_getc
+    cmp r0, 0xd
+    bne 1b
 
     mov r0, 0
     pop {r4-r11, pc}

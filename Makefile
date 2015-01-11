@@ -12,10 +12,12 @@ PROGRAMS = \
     light_leds_hardirq  \
     light_leds_softirq  \
     light_leds_svc      \
+    uart_stress         \
     uart_test           \
     serial_hello        \
     eeprom_dump
 
+uart_stress_MODULES = uart
 uart_test_MODULES = uart
 debug_test_MODULES = uart debug
 eeprom_dump_MODULES = uart i2c
